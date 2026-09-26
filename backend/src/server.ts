@@ -1,3 +1,4 @@
+
 import express from 'express'
 import cors from 'cors'
 import prisma from './prisma'
@@ -28,7 +29,7 @@ app.get('/test-db', async (req, res) => {
 
     res.json({
       message: 'Database berhasil terhubung!',
-      tasks: tasks,
+      tasks,
     })
   } catch (error) {
     console.error(error)
@@ -71,9 +72,9 @@ app.post('/tasks', async (req, res) => {
 
     const task = await prisma.task.create({
       data: {
-        title: title,
-        description: description,
-        subject: subject,
+        title,
+        description,
+        subject,
         dueDate: new Date(dueDate),
       },
     })
@@ -106,13 +107,15 @@ app.patch('/tasks/:id', async (req, res) => {
 
     const task = await prisma.task.update({
       where: {
-        id: id,
+        id,
       },
       data: {
         ...(title !== undefined && { title }),
         ...(description !== undefined && { description }),
         ...(subject !== undefined && { subject }),
-        ...(dueDate !== undefined && { dueDate: new Date(dueDate) }),
+        ...(dueDate !== undefined && {
+          dueDate: new Date(dueDate),
+        }),
         ...(completed !== undefined && { completed }),
       },
     })
@@ -137,7 +140,7 @@ app.delete('/tasks/:id', async (req, res) => {
 
     await prisma.task.delete({
       where: {
-        id: id,
+        id,
       },
     })
 
@@ -153,11 +156,6 @@ app.delete('/tasks/:id', async (req, res) => {
   }
 })
 
-// =========================
-// Menjalankan server
-// =========================
-const PORT = 3000
+// Export untuk Vercel
+export default app
 
-app.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:${PORT}`)
-})
